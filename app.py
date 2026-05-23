@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from googleapiclient.discovery import build
 import re
-from wordcloud import WordCloud
+from wordcloud import WordCloud, STOPWORDS
 from transformers import pipeline
 
 st.set_page_config(page_title="Gadget Sentiment Analyzer", layout='wide')
@@ -54,7 +54,7 @@ def ambil_komentar_yt(video_id, max_results=100):
                 else:
                     break
     except Exception as e:
-        st.error(f'Gagagl Menarik data API: {e}')
+        st.error(f'Gagal Menarik data API: {e}')
 
     return semua_komentar
 
@@ -97,8 +97,24 @@ with tab1:
                         with col2:
                             st.write("### Word Cloud")
                             semua_teks = " ".join(df_hasil['Komentar'])
+                            kata_abaikan = set(STOPWORDS)
+                            stopwords_indo = [
+                                "saya", "aku", "sy", "gw", "gue", "gua", "kamu", "lu", "elu", "dia", "mereka", "kita", "kami",
+                                "bang", "bg", "bro", "ngab", "kak", "min", "bos", "om", "gan", "guys", "ges",
+                                "dan", "di", "ke", "dari", "yang", "yg", "ini", "itu", "untuk", "utk", "pada", "dengan", "dgn",
+                                "adalah", "karena", "krn", "kalau", "klo", "kalo", "biar", "atau", "ataupun",
+                                "sudah", "udah", "udh", "sdh", "lagi", "lg", "masih", "msh", "baru", "pernah", "belum", "blm",
+                                "sekarang", "skrg", "nanti", "ntar", "besok", "kemarin", "hari", "jam", "menit",
+                                "sih", "nya", "aja", "saja", "deh", "lah", "dong", "kan", "tuh", "nih", "kok", "ya", "yah",
+                                "emang", "emg", "pasti", "bener", "beneran", "benar", "terus", "trus", "pas", "buat", "bikin",
+                                "doang", "dapet", "bisa", "gak", "ga", "nggak", "gk", "tdk", "tidak", "sama", "sm", "juga", "jg",
+                                "pun", "ada", "tiada", "bukan", "jangan", "jgn", "sangat", "banget", "bgt", "paling", "sekali",
+                                "wkwk", "wkwkwk", "haha", "hehe", "haha", "hihi", "eh", "oh", "wah", "wow", "anjir", "njir", "jir",
+                                "gila", "buset", "waduh", "duh"
+                            ]
+                            kata_abaikan.update(stopwords_indo)
                             if semua_teks.strip():
-                                wordcloud = WordCloud(width=800, height=400, background_color='white').generate(semua_teks)
+                                wordcloud = WordCloud(stopwords=kata_abaikan, width=800, height=400, background_color='white').generate(semua_teks)
                                 fig2, ax2 = plt.subplots()
                                 ax2.imshow(wordcloud, interpolation='bilinear')
                                 ax2.axis("off")
