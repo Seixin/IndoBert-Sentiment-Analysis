@@ -75,7 +75,7 @@ with tab1:
                     komentar_list = ambil_komentar_yt(video_id, max_results=batas_komentar)
                     
                     if komentar_list:
-                        hasil_prediksi = nlp_pipeline(komentar_list)
+                        hasil_prediksi = nlp_pipeline(komentar_list, truncation=True, max_length=512)
                         df_hasil = pd.DataFrame({
                             "Komentar": komentar_list,
                             "Label": [res['label'] for res in hasil_prediksi]
