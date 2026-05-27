@@ -5,6 +5,7 @@ from googleapiclient.discovery import build
 import re
 from wordcloud import WordCloud, STOPWORDS
 from transformers import pipeline
+from nlp_id.postag import PosTag
 
 st.set_page_config(page_title="Gadget Sentiment Analyzer", layout='wide')
 
@@ -95,30 +96,29 @@ with tab1:
                             st.pyplot(fig)
                             
                         with col2:
-                            st.write("### Word Cloud")
+                            st.write("### Word Cloud (Fokus Kata Sifat)")
                             semua_teks = " ".join(df_hasil['Komentar'])
+                            
+                            postagger = PosTag()
+                            hasil_pos = postagger.get_pos_tag(semua_teks)
+                            
+                            kumpulan_kata_sifat = [kata.lower() for kata, tag in hasil_pos if tag == 'JJ']
+                            teks_kata_sifat = " ".join(kumpulan_kata_sifat)
+                            
                             kata_abaikan = set(STOPWORDS)
                             stopwords_indo = [
-                                "saya", "aku", "sy", "gw", "gue", "gua", "kamu", "lu", "elu", "dia", "mereka", "kita", "kami",
-                                "bang", "bg", "bro", "ngab", "kak", "min", "bos", "om", "gan", "guys", "ges",
-                                "dan", "di", "ke", "dari", "yang", "yg", "ini", "itu", "untuk", "utk", "pada", "dengan", "dgn",
-                                "adalah", "karena", "krn", "kalau", "klo", "kalo", "biar", "atau", "ataupun",
-                                "sudah", "udah", "udh", "sdh", "lagi", "lg", "masih", "msh", "baru", "pernah", "belum", "blm",
-                                "sekarang", "skrg", "nanti", "ntar", "besok", "kemarin", "hari", "jam", "menit",
-                                "sih", "nya", "aja", "saja", "deh", "lah", "dong", "kan", "tuh", "nih", "kok", "ya", "yah",
-                                "emang", "emg", "pasti", "bener", "beneran", "benar", "terus", "trus", "pas", "buat", "bikin",
-                                "doang", "dapet", "bisa", "gak", "ga", "nggak", "gk", "tdk", "tidak", "sama", "sm", "juga", "jg",
-                                "pun", "ada", "tiada", "bukan", "jangan", "jgn", "sangat", "banget", "bgt", "paling", "sekali",
-                                "wkwk", "wkwkwk", "haha", "hehe", "haha", "hihi", "eh", "oh", "wah", "wow", "anjir", "njir", "jir",
-                                "gila", "buset", "waduh", "duh"
+                                "bisa", "pasti", "bener", "benar", "baru", "sama", "sangat", "banget", "paling"
                             ]
                             kata_abaikan.update(stopwords_indo)
-                            if semua_teks.strip():
-                                wordcloud = WordCloud(stopwords=kata_abaikan, width=800, height=400, background_color='white').generate(semua_teks)
+                            
+                            if teks_kata_sifat.strip():
+                                wordcloud = WordCloud(stopwords=kata_abaikan, width=800, height=400, background_color='white', colormap='magma').generate(teks_kata_sifat)
                                 fig2, ax2 = plt.subplots()
                                 ax2.imshow(wordcloud, interpolation='bilinear')
                                 ax2.axis("off")
                                 st.pyplot(fig2)
+                            else:
+                                st.warning("Tidak ada kata sifat spesifik yang terdeteksi.")
                             
                         st.dataframe(df_hasil, use_container_width=True)
                 else:
