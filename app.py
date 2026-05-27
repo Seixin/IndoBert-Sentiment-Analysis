@@ -6,8 +6,18 @@ import re
 from wordcloud import WordCloud, STOPWORDS
 from transformers import pipeline
 from nlp_id.postag import PosTag
+import nltk
 
 st.set_page_config(page_title="Gadget Sentiment Analyzer", layout='wide')
+
+@st.cache_resource
+def siapkan_nltk():
+    try:
+        nltk.data.find('tokenizers/punkt')
+    except LookupError:
+        nltk.download('punkt')
+
+siapkan_nltk()
 
 @st.cache_resource
 def load_model():
