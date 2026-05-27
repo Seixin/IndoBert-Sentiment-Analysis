@@ -106,7 +106,7 @@ with tab1:
                             st.pyplot(fig)
                             
                         with col2:
-                            st.write("### Word Cloud (Fokus Kata Sifat)")
+                            st.write("### Word Cloud")
                             semua_teks = " ".join(df_hasil['Komentar'])
                             
                             postagger = PosTag()
