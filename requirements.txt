@@ -5,3 +5,4 @@ wordcloud
 transformers
 torch
 google-api-python-client
+nlp-id==0.1.15
